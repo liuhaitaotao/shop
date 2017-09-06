@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .btn{
+            float: right;
+            width: 80px;
+            height: 80px;
+            background-color: #a1a2a7;
+            color: #d1c4e9;
+            position: fixed;
+            right:0;
+            bottom:0;
+        }
+        header{
+          overflow: hidden;
+            width: 100%;
+            display: flex;
+        }
+   .catUl li {
+       display: block;
+       float:left;
+       width: 100px;
+       height: 30px;
+       line-height:30px;
+       text-align: center;
+       background-color: goldenrod;
+       margin-right: 20px;
+       color:yellow;
+    }
+   .catUl li:hover{
+       background-color: yellow;
+   }
+   .catUl li a {
+    text-decoration: none;
+    color: white;
+    }
+   .catUl li a:hover {
+    text-decoration: underline;
+    }
+        section{
+            float:left;
+        }
+        section .goodUl{
+            overflow:hidden;
+            margin:0 auto;
+            width:90%;
+            background-color: skyblue;
+        }
+        section .goodUl li{
+            width: 200px;
+            height: 500px;
+            background-color: orange;
+            float:left;
+            margin-left: 20px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        section .goodUl li img{
+            width: 200px;
+        }
+        span{
+            width:100%;
+            background-color: indianred;
+            font-size: 16px;
+            color:white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+      <h2></h2>
+      <ul class="catUl" id="catUl"></ul>
+    </header>
+    <section>
+      <ul class="goodUl" id="goodUl"></ul>
+        <input type="button" class="btn" value="回到顶部">
+    </section>
+     <script>
+         var oH2 = document.querySelector('h2');
+         var oUl = document.getElementById('catUl');
+
+         //创建一个ajax对象
+         var xhr = new XMLHttpRequest();
+         //绑定准备状态改变事件
+         xhr.onreadystatechange = function() {
+             //当内容加载完成
+             // if (xhr.readyState === 4) {
+             if (xhr.readyState === xhr.DONE) {
+                 //把内容放到页面上
+                 // oH2.innerHTML = xhr.responseText;
+                 try {
+                     var json = JSON.parse(xhr.responseText);//返回的整个json对象
+                     var data = json.data;//json对象当中的data是一个数组
+                     for (var i = 0; i < data.length; i++) {
+                         var obj = data[i];//数组里面的每一项是一个商品分类的对象
+
+                          var oLi = document.createElement('li');
+                          var oA = document.createElement('a');
+                          oA.innerText = obj.cat_name;
+                          oA.href = "#";
+                          oLi.appendChild(oA);
+                          oUl.appendChild(oLi);
+
+                         // oUl.innerHTML += `<li><a href="#">${obj.cat_name}</a></li>`;
+//                         oUl.innerHTML += '<li><a href="#">' + obj.cat_name + '</a></li>';
+                     }
+                 } catch (error) {
+
+                 }
+             }
+         }
+         //请求资源
+         xhr.open('GET', 'http://h6.duchengjiu.top/shop/api_cat.php');
+         //发送请求
+         xhr.send();
+
+
+         //热门商品
+         var goodUl = document.querySelector("#goodUl");
+         var xhr1 = new XMLHttpRequest();
+         xhr1.onreadystatechange = function () {
+//        if(xhr1.readyState === 4){
+             if(xhr1.readyState === xhr1.DONE){
+//            goodUl.innerHTML = xhr1.responseText;
+                 try{
+                     var json = JSON.parse(xhr1.responseText);
+                     var data = json.data;
+                     for(var i = 0;i < data.length; i++){
+                         var obj = data[i];
+                         console.log(obj);
+                    var oli = document.createElement("li");
+                    var oa = document.createElement("a");
+                    var omg = document.createElement("img");
+                    var price = document.createElement("span");
+                    var desc = document.createElement("p");
+                    oli.innerHTML+=`<img src="${obj.goods_thumb}"/>`
+                    oa.innerText = obj.goods_name;
+                    desc.innerText = obj.goods_desc;
+                    price.innerText = obj.price + "￥";
+                    oa.href = "#";
+                    oli.appendChild(omg);
+                    oli.appendChild(oa);
+                    oli.appendChild(price);
+                    oli.appendChild(desc);
+                    goodUl.appendChild(oli);
+
+//                         oUl.innerHTML += '<li><a href="#">' + obj.cat_name + '</a></li>';
+//                         goodUl.appendChild( '<li><img src="'+obj.data[i].goods_thumb+'" alt=""/><p><a href=detail.html?goods_id='+obj.data[i].goods_id+'>'+obj.data[i].goods_name+'</a></p><p>'+obj.data[i].goods_desc+'</p><p class="price">'+obj.data[i].price+'</p></li>');
+                     }
+                 }catch (error){
+
+                 }
+             }
+         }
+         xhr1.open("GET","http://h6.duchengjiu.top/shop/api_goods.php");
+         xhr1.send();
+         var btn = document.querySelector(".btn");
+         btn.onclick = function () {
+             scrollTo(0,0);
+
+         };
+         setInterval(function () {
+             if(scrollY > 0){
+                 btn.style.cssText = "display:block";
+             }else{
+                 btn.style.cssText = "display:none";
+             }
+         },100);
+     </script>
+</body>
+</html>
